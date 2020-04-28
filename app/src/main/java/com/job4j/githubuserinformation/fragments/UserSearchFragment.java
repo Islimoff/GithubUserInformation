@@ -1,5 +1,6 @@
 package com.job4j.githubuserinformation.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.job4j.githubuserinformation.R;
+import com.job4j.githubuserinformation.activities.ReposListActivity;
 import com.job4j.githubuserinformation.models.User;
 import com.job4j.githubuserinformation.retrofit.JsonApi;
 import com.job4j.githubuserinformation.retrofit.RetrofitClient;
@@ -49,6 +51,9 @@ public class UserSearchFragment extends Fragment {
                        @Override
                        public void onSuccess(User user) {
                            Toast.makeText(getContext(), user.getPublicRepos().toString(), Toast.LENGTH_SHORT).show();
+                           Intent intent= new Intent(getActivity(),ReposListActivity.class);
+                           intent.putExtra("userName",user.getLogin());
+                           getActivity().startActivity(intent);
                        }
 
                        @Override

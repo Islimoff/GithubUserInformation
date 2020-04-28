@@ -7,6 +7,6 @@ import com.job4j.githubuserinformation.fragments.ReposListFragment;
 public class ReposListActivity extends BaseActivity {
     @Override
     public Fragment loadFragment() {
-        return new ReposListFragment();
+        return ReposListFragment.of(getIntent().getStringExtra("userName"));
     }
 }

@@ -175,7 +175,7 @@ public class Repository {
     private Integer watchersCount;
     @SerializedName("language")
     @Expose
-    private Object language;
+    private String language;
     @SerializedName("has_issues")
     @Expose
     private Boolean hasIssues;
@@ -670,11 +670,11 @@ public class Repository {
         this.watchersCount = watchersCount;
     }
 
-    public Object getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(Object language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 

@@ -43,22 +43,8 @@ public class ReposListFragment extends Fragment {
         jsonApi = retrofit.create(JsonApi.class);
         Bundle args = getArguments();
         userName = args.getString("userName");
-        Repository rep1=new Repository();
-        Repository rep2=new Repository();
-        rep1.setName("name");
-        rep1.setLanguage("lang");
-        rep2.setName("name1");
-        rep2.setLanguage("lang1");
-        Repository rep3=new Repository();
-        rep2.setName("name2");
-        rep2.setLanguage("lang2");
-        List<Repository> rep=new ArrayList<>();
-        rep.add(rep1);
-        rep.add(rep2);
-        rep.add(rep3);
-        recycler.setAdapter(new ReposAdapter(rep));
-//        updateUI();
-        return super.onCreateView(inflater, container, savedInstanceState);
+        updateUI();
+        return view;
     }
 
     private void updateUI() {

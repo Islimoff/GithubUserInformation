@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,10 +25,11 @@ import com.job4j.githubuserinformation.room.MyDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -56,9 +56,9 @@ public class UserSearchFragment extends Fragment {
                 .build();
 
         searchButton.setOnClickListener(this::search);
-        List<String> list = getUserNames();
+        List<String> userNames = getUserNames();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line, list);
+                android.R.layout.simple_dropdown_item_1line, userNames);
         searchText = view.findViewById(R.id.search_text);
         searchText.setAdapter(adapter);
         return view;
@@ -67,6 +67,7 @@ public class UserSearchFragment extends Fragment {
 
     private void search(View view) {
         String inputText = searchText.getText().toString();
+        final String[] userName = new String[1];
         if (!inputText.equals("")) {
             jsonApi.getUser(searchText.getText().toString())
                     .subscribeOn(Schedulers.io())
@@ -74,8 +75,29 @@ public class UserSearchFragment extends Fragment {
                     .subscribe(new DisposableSingleObserver<User>() {
                         @Override
                         public void onSuccess(User user) {
-                            if(!user.getLogin().equals(db.getUserDao().getUserName(user.getId()))){
-                                db.getUserDao().insertUser(user);
+                            Single.fromCallable(() -> db.getUserDao().getUserName(user.getId()))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new DisposableSingleObserver<String>() {
+                                        @Override
+                                        public void onSuccess(String s) {
+                                            userName[0] =s;
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+
+                                        }
+                                    });
+                            if (!user.getLogin().equals(userName[0])) {
+                                Completable.fromRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        db.getUserDao().insertUser(user);
+                                    }
+                                })
+                                .subscribeOn(Schedulers.io())
+                                .subscribe();
                             }
                             Intent intent = new Intent(getActivity(), ReposListActivity.class);
                             intent.putExtra("userName", user.getLogin());
@@ -94,9 +116,16 @@ public class UserSearchFragment extends Fragment {
 
     private List<String> getUserNames() {
         List<String> userNames = new ArrayList<>();
-        for (User user : db.getUserDao().getAllUsers()) {
-            userNames.add(user.getLogin());
-        }
+        db.getUserDao().getAllUsers()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<User>>() {
+                    @Override
+                    public void accept(List<User> users) throws Exception {
+                        for (User user : users) {
+                            userNames.add(user.getLogin());
+                        }
+                    }
+                });
         return userNames;
     }
 }

@@ -10,19 +10,20 @@ import com.job4j.githubuserinformation.models.User;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 @Dao
 public interface UserDao {
 
     @Insert
-    void insertUser(User user);
+    long insertUser(User user);
 
     @Delete
     void deleteUser(User user);
 
     @Query("SELECT * FROM user")
-    Flowable<List<User>> getAllUsers();
+    Maybe<List<User>> getAllUsers();
 
     @Query("SELECT login FROM user WHERE id = :id")
     String getUserName(int id);

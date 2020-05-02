@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +40,10 @@ public class ReposListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.repos_list_activity, container, false);
+        Toolbar toolbar = view.findViewById(R.id.toolbar2);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
         recycler = view.findViewById(R.id.repos_list);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         Retrofit retrofit = RetrofitClient.getInstance();

@@ -17,12 +17,12 @@ import io.reactivex.schedulers.Schedulers;
 
 public class RoomDb {
 
-    private MyDatabase myDatabase;
+    private Store myDatabase;
     private static RoomDb roomDb;
 
     private RoomDb(Context context) {
         myDatabase = Room.databaseBuilder(context,
-                MyDatabase.class, "populus-database")
+                Store.class, "populus-database")
                 .allowMainThreadQueries()
                 .build();
     }
